@@ -1,3 +1,33 @@
+
+// function to check for next page and open it
+function nextPageCheckOpen(loadedPage) {
+    // if anything: click it 
+    const nextbtn = loadedPage('.Pagination li.next a')
+
+    if (nextbtn.length == 1) {
+        return nextbtn.attr().href
+    }
+    else {
+        return 'No more pages'
+    }
+}
+
+function getLoadPage(url) {
+    axios.get(url)
+        // chain actions once the page is got
+        .then((response)=> {
+            // Get the response html
+            const html = response.data
+            // use cheerio to pick out different pieces
+            const $ = cheerio.load(html)
+
+            pageCheck = nextPageCheckOpen($)
+            console.log(pageCheck)
+
+        // Check for errors and log them
+        }).catch((err) => console.log(err))
+}
+
 // define the port
 const PORT = 8000
 
@@ -18,7 +48,7 @@ const jobs = []
 // Scrape the webpages
 app.get('/', (req, res) => {
     // Set the target
-    axios.get('https://www.mygisjobs.com/california')
+    axios.get('https://www.mygisjobs.com/california/')
         // chain actions once the page is got
         .then((response)=> {
             // Get the response html
@@ -27,13 +57,8 @@ app.get('/', (req, res) => {
             const $ = cheerio.load(html)
             
 
-            // TO DO - Get pagination information and click through, getting the same job info as before
-            // Best bet is to find the next button on each new page. If next button exists, click it, if not you're done
-            // .Pagination li class 'Next'
-            // https://stackoverflow.com/questions/50776770/scrape-paginate-using-nodejs-cheerio
-            const pages = $('.Pagination').text()
+            // // TO DO - create function for get links, function for next page
 
-            console.log(pages)
 
             // // Get each li within the PostList div class and run a function on it to pull out elements
             // $('.PostList li', html).each(function () {
@@ -49,10 +74,35 @@ app.get('/', (req, res) => {
             //         })
             // })
             
-            // // Write jobs on the page
-            // res.json(jobs)
-            // console.log(jobs)
+            // Write jobs on the page
+            res.json(jobs)
+            console.log(jobs)
+
+            pageCheck = nextPageCheckOpen($)
+            console.log(pageCheck)
+
 
         // Check for errors and log them
         }).catch((err) => console.log(err))
 })
+
+// load page
+// get info
+// check for next page
+//  if next page, start over again
+// While true, break
+
+// function doItAll() {
+//     // put state variables other than the actual loop control here
+
+//     function doTheLoop() {
+//         for(var i=0; i<20; i++) {
+//             if (somecondition) {
+//                 return(true);    // run the loop again ---> MF Change this ro return [True, href]
+//             }
+//         }
+//         return(false);   // done running the loop
+//     }
+//     while (doTheLoop()) {}
+//     // do some things after the loop
+// }
