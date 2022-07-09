@@ -1,0 +1,15 @@
+Packages
+- cheerio: find html elements, kinda like bs4
+- express: node.js web framework, back end for node.js - used for building web apps and APIs. de facto standard server framework for node.js
+- axios: promise based http client for browser and node.js - sends http requests - kinda like requests?
+
+Add scripts to package.json in order to run stuff?
+    - nodemon listens for changes
+
+.trim() == .strip()
+.replace(/\n/g, '') removes the newlines
+
+Finding elements
+- .ClassName let's you find specific Classes
+    - can do this for a nested class name even when starting like 4 parents up
+- to search by multiple levels you can just string the ids together with spaces like 'div li'
