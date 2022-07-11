@@ -2,31 +2,89 @@
 // function to check for next page and open it
 function nextPageCheckOpen(loadedPage) {
     // if anything: click it 
-    const nextbtn = loadedPage('.Pagination li.next a')
+
+    let nextbtn = loadedPage('.Pagination li.next a')
 
     if (nextbtn.length == 1) {
-        return nextbtn.attr().href
+        return [true, nextbtn.attr().href]
     }
     else {
-        return 'No more pages'
+        return false
     }
 }
 
-function getLoadPage(url) {
+// function getLoadPage(url) {
+//     axios.get(url)
+//         // chain actions once the page is got
+//         .then((response)=> {
+//             // Get the response html
+//             const html = response.data
+//             // use cheerio to pick out different pieces
+//             const $ = cheerio.load(html)
+
+//             pageCheck = nextPageCheckOpen($)
+//             console.log(pageCheck)
+
+//         // Check for errors and log them
+//         }).catch((err) => console.log(err))
+// }
+
+function loadPage(url) {
     axios.get(url)
         // chain actions once the page is got
         .then((response)=> {
             // Get the response html
-            const html = response.data
+            let html = response.data
             // use cheerio to pick out different pieces
-            const $ = cheerio.load(html)
+            let $ = cheerio.load(html)
 
-            pageCheck = nextPageCheckOpen($)
-            console.log(pageCheck)
+            return $
 
-        // Check for errors and log them
-        }).catch((err) => console.log(err))
+    })
+
 }
+
+// function scrape(url) {
+//     url = url
+
+//     $ =loadPage(url)
+
+//     // get jobs
+
+//     pageCheck = nextPageCheckOpen($)
+//     console.log(pageCheck)
+
+//     while (pageCheck[0]) {
+//         $ =loadPage(url)
+
+//         // get jobs
+
+//         pageCheck = nextPageCheckOpen($)
+//         console.log(pageCheck)
+
+//         url=pageCheck[1]
+//     }
+
+// }
+
+// set basic constants
+// do the initial page
+// while true, do it for next page
+
+// function doItAll() {
+//     // put state variables other than the actual loop control here
+
+//     function doTheLoop() {
+//         for(var i=0; i<20; i++) {
+//             if (somecondition) {
+//                 return(true);    // run the loop again ---> MF Change this ro return [True, href]
+//             }
+//         }
+//         return(false);   // done running the loop
+//     }
+//     while (doTheLoop()) {}
+//     // do some things after the loop
+// }
 
 // define the port
 const PORT = 8000
@@ -48,13 +106,13 @@ const jobs = []
 // Scrape the webpages
 app.get('/', (req, res) => {
     // Set the target
-    axios.get('https://www.mygisjobs.com/california/')
+    axios.get('https://www.mygisjobs.com/california/20/')
         // chain actions once the page is got
         .then((response)=> {
             // Get the response html
-            const html = response.data
+            let html = response.data
             // use cheerio to pick out different pieces
-            const $ = cheerio.load(html)
+            let $ = cheerio.load(html)
             
 
             // // TO DO - create function for get links, function for next page
@@ -80,9 +138,31 @@ app.get('/', (req, res) => {
 
             pageCheck = nextPageCheckOpen($)
             console.log(pageCheck)
+            console.log(pageCheck[0])
 
+            url = pageCheck[1]
 
-        // Check for errors and log them
+            while (pageCheck[0] == true) {
+                axios.get(pageCheck[1])
+                    .then((response) => {
+                        // Get the response html
+                        let html = response.data
+                        // use cheerio to pick out different pieces
+                        let $ = cheerio.load(html)
+
+                        // $ = loadPage(url)
+
+                        // console.log($)
+                
+                        // get jobs
+                
+                        pageCheck = nextPageCheckOpen($)
+                        console.log(pageCheck)
+        
+                        url=pageCheck[1]
+                    })
+            }
+            console.log('not true')
         }).catch((err) => console.log(err))
 })
 
@@ -91,18 +171,3 @@ app.get('/', (req, res) => {
 // check for next page
 //  if next page, start over again
 // While true, break
-
-// function doItAll() {
-//     // put state variables other than the actual loop control here
-
-//     function doTheLoop() {
-//         for(var i=0; i<20; i++) {
-//             if (somecondition) {
-//                 return(true);    // run the loop again ---> MF Change this ro return [True, href]
-//             }
-//         }
-//         return(false);   // done running the loop
-//     }
-//     while (doTheLoop()) {}
-//     // do some things after the loop
-// }
